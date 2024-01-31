@@ -1,9 +1,12 @@
 const express = require('express')
+var os = require("os");
+var hostname = os.hostname();
+var networkInterfaces = os.networkInterfaces();
 const app = express()
 const port = 8000
 
 app.get('/', (req, res) => {
-  res.send('Hello World 333')
+  res.send(`Hello World 333, hostname=${hostname}, IP=${networkInterfaces}`)
 })
 
 app.listen(port, () => {
