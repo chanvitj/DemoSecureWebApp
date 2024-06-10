@@ -14,6 +14,7 @@ scanners:
 # Configures languages for sast scanner. If not configured, scans will be performed on all supported languages
 languages:
  - nodejs
+ - c#
 #  - javascript
 #  - python
 
