@@ -1,6 +1,6 @@
 id:
   org: 3507adc7-f1e5-4749-9bba-b8e9cce03eee
-  app: 6992a174-c175-4575-9da6-9c04f15798e8
+  app: c2b7dde2-a405-4384-9791-439312951760
 
 # If below settings are not configured, scans will be performed for all supported scanners.
 scanners:
@@ -12,9 +12,9 @@ scanners:
 # - dast
 
 # Configures languages for sast scanner. If not configured, scans will be performed on all supported languages
-languages:
- - javascript
- - c#
+#languages:
+# - javascript
+# - c#
 #  - javascript
 #  - python
 
