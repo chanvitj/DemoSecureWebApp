@@ -9,7 +9,21 @@ const app = express();
 const port = 8000;
 
 const os = require('os');
+const interfaces = os.networkInterfaces();
+let ipAddress = '';
 
+for (const interfaceName in interfaces) {
+    const addresses = interfaces[interfaceName];
+    for (const address of addresses) {
+        if (address.family === 'IPv4' && !address.internal) {
+            ipAddress = address.address;
+            break;
+        }
+    }
+    if (ipAddress) break; // If found, stop searching
+}
+
+const hostname = os.hostname();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -27,21 +41,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get('/', (req, res) => {  // Route to handle the initial page
-    const interfaces = os.networkInterfaces();
-    let ipAddress = '';
-
-    for (const interfaceName in interfaces) {
-        const addresses = interfaces[interfaceName];
-        for (const address of addresses) {
-            if (address.family === 'IPv4' && !address.internal) {
-                ipAddress = address.address;
-                break;
-            }
-        }
-        if (ipAddress) break; // If found, stop searching
-    }
-
-    const hostname = os.hostname();
     res.send(`
         <!DOCTYPE html>
         <html>
@@ -61,9 +60,6 @@ app.get('/', (req, res) => {  // Route to handle the initial page
 app.use(express.static('public'));
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    const hostname = os.hostname();
-    const interfaces = os.networkInterfaces();
-    
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
