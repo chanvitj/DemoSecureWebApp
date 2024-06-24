@@ -8,6 +8,8 @@ const path = require('path');
 const app = express();
 const port = 8000;
 
+const os = require('os');
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,9 +26,44 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.get('/', (req, res) => {  // Route to handle the initial page
+    const interfaces = os.networkInterfaces();
+    let ipAddress = '';
+
+    for (const interfaceName in interfaces) {
+        const addresses = interfaces[interfaceName];
+        for (const address of addresses) {
+            if (address.family === 'IPv4' && !address.internal) {
+                ipAddress = address.address;
+                break;
+            }
+        }
+        if (ipAddress) break; // If found, stop searching
+    }
+
+    const hostname = os.hostname();
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <h2>Hostname: ${hostname}</h2>
+            <h2>IP Address: ${ipAddress}</h2>
+
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <button type="submit">Upload</button>
+            </form>
+        </body>
+        </html>
+    `);
+});
+
 app.use(express.static('public'));
 
 app.post('/upload', upload.single('file'), (req, res) => {
+    const hostname = os.hostname();
+    const interfaces = os.networkInterfaces();
+    
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -35,7 +72,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     fs.readdir('uploads', (err, files) => {
         if (err) {
             console.error('Error reading uploads folder:', err);
-            return res.status(500).send('Error listing files.');
+            return res.status(500).send('Error listing files.'+hostname+'.'+interfaces);
         }
 
         const fileListHTML = files.map(file => `<li>${file}</li>`).join('');
@@ -46,6 +83,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
                 <h1>File uploaded successfully!</h1>
                 <h2>Files in uploads Folder:</h2>
                 <ul>${fileListHTML}</ul>
+                <h2>Hostname: ${hostname}</h2>
+                <h2>IP Address: ${ipAddress}</h2>
             </body>
             </html>
         `;
