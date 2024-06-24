@@ -18,22 +18,23 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname); // Use original file name
+        console.log('file saved');
     }
 });
 
 const upload = multer({ storage: storage });
 
-app.use(express.static('public'));
+app.use(express.static('uploads'));
 
 app.post('/upload', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
 
-    // Get list of files in 'public' folder
-    fs.readdir('public', (err, files) => {
+    // Get list of files in 'uploads' folder
+    fs.readdir('uploads', (err, files) => {
         if (err) {
-            console.error('Error reading public folder:', err);
+            console.error('Error reading uploads folder:', err);
             return res.status(500).send('Error listing files.');
         }
 
@@ -43,7 +44,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
             <html>
             <body>
                 <h1>File uploaded successfully!</h1>
-                <h2>Files in Public Folder:</h2>
+                <h2>Files in uploads Folder:</h2>
                 <ul>${fileListHTML}</ul>
             </body>
             </html>
