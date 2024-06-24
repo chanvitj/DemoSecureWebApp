@@ -9,6 +9,7 @@ const app = express();
 const port = 8000;
 
 const os = require('os');
+const hostname = os.hostname();
 const interfaces = os.networkInterfaces();
 let ipAddress = '';
 
@@ -22,8 +23,9 @@ for (const interfaceName in interfaces) {
     }
     if (ipAddress) break; // If found, stop searching
 }
+const hostHostname = process.env.HOST_HOSTNAME;
+const hostIPAddress = process.env.HOST_IP;
 
-const hostname = os.hostname();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -47,6 +49,8 @@ app.get('/', (req, res) => {  // Route to handle the initial page
         <body>
             <h2>Hostname: ${hostname}</h2>
             <h2>IP Address: ${ipAddress}</h2>
+            <h2>Host - Hostname: ${hostHostname}</h2>
+            <h2>Host - IP Address: ${hostIPAddress}</h2>
 
             <form action="/upload" method="POST" enctype="multipart/form-data">
                 <input type="file" name="file">
@@ -81,6 +85,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
                 <ul>${fileListHTML}</ul>
                 <h2>Hostname: ${hostname}</h2>
                 <h2>IP Address: ${ipAddress}</h2>
+                <h2>Host - Hostname: ${hostHostname}</h2>
+                <h2>Host - IP Address: ${hostIPAddress}</h2>
             </body>
             </html>
         `;
