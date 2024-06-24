@@ -2,9 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require('fs'); // Import the 'fs' (filesystem) module
+const path = require('path');
 
 const app = express();
-const port = 8000; // Choose your preferred port
+const port = 8000;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,18 +23,36 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Serve static files (CSS, images, etc.)
 app.use(express.static('public'));
 
-// Upload route
 app.post('/upload', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
-    res.status(200).send('File uploaded successfully.');
+
+    // Get list of files in 'public' folder
+    fs.readdir('public', (err, files) => {
+        if (err) {
+            console.error('Error reading public folder:', err);
+            return res.status(500).send('Error listing files.');
+        }
+
+        const fileListHTML = files.map(file => `<li>${file}</li>`).join('');
+        const responseHTML = `
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <h1>File uploaded successfully!</h1>
+                <h2>Files in Public Folder:</h2>
+                <ul>${fileListHTML}</ul>
+            </body>
+            </html>
+        `;
+
+        res.send(responseHTML); // Send the HTML response with file list
+    });
 });
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
 });
