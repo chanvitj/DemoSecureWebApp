@@ -47,7 +47,7 @@ app.get('/', (req, res) => {  // Route to handle the initial page
         <!DOCTYPE html>
         <html>
         <body>
-            <h2>Hostname444: ${hostname}</h2>
+            <h2>Hostname555: ${hostname}</h2>
             <h2>IP Address: ${ipAddress}</h2>
             <h2>Host - Hostname: ${hostHostname}</h2>
             <h2>Host - IP Address: ${hostIPAddress}</h2>
